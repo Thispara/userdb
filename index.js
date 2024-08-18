@@ -12,12 +12,11 @@ app.use(express.json());
 
 // Middleware
 app.use(cors({
-    origin: 'https://loginpage-41hzdngh3-paradons-projects.vercel.app', // Update with your frontend URL
+    origin: process.env.CLIENT_URL, 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
 }));
 
-// Environment Variables
 const MONGO_URI = process.env.MONGO_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 
