@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
 const User = require('./models/user.js');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
@@ -9,11 +8,16 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-app.use(bodyParser.json());
-app.use(cors());
 
+// Middleware
+app.use(cors({
+    origin: 'https://loginpage-41hzdngh3-paradons-projects.vercel.app', // Update with your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
+}));
 
-const MONGO_URI = 'mongodb+srv://paradon:kyhpeN-4nogwy-runweg@backend-api.ldqaie6.mongodb.net/myauthdb?retryWrites=true&w=majority';
+// Environment Variables
+const MONGO_URI = process.env.MONGO_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Connect to MongoDB
@@ -21,11 +25,10 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
 
-// Register Route
+// Routes
 app.post('/register', async (req, res) => {
   const { username, password } = req.body;
 
-  // Input validation
   if (!username || !password) {
     return res.status(400).send('Username and password are required');
   }
@@ -48,8 +51,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-
-// Login Route
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -69,7 +70,6 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Protected Route Example
 app.get('/protected', authMiddleware, (req, res) => {
   res.send('This is a protected route');
 });
@@ -79,4 +79,5 @@ app.get('/api', async (req, res) => {
   res.json(users);
 });
 
+// Start Server
 app.listen(5001, () => console.log('Server running on port 5001'));
